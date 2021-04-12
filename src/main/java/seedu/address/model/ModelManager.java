@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import seedu.address.commons.core.CssSettings;
 import seedu.address.commons.core.GuiSettings;
 import seedu.address.commons.core.LogsCenter;
 import seedu.address.model.person.Person;
@@ -64,6 +65,16 @@ public class ModelManager implements Model {
         requireNonNull(guiSettings);
         userPrefs.setGuiSettings(guiSettings);
     }
+    @Override
+    public CssSettings getCssSettings() {
+        return userPrefs.getCssSettings();
+    }
+
+    @Override
+    public void setCssSettings(CssSettings cssSettings) {
+        requireNonNull(cssSettings);
+        userPrefs.setCssSettings(cssSettings);
+    }
 
     @Override
     public Path getAddressBookFilePath() {
@@ -114,14 +125,16 @@ public class ModelManager implements Model {
 
     @Override
     public void massDelete(int startIndex, int endIndex) {
+        assert startIndex < endIndex : "Start index must be strictly smaller than the end index";
         for (int i = startIndex; i <= endIndex; i++) {
-            Person personToDelete = addressBook.getPersonList().get(startIndex - 1);
+            Person personToDelete = filteredPersons.get(startIndex - 1);
             deletePerson(personToDelete);
         }
     }
 
     @Override
     public void massBlacklist(int startIndex, int endIndex) {
+        assert startIndex < endIndex : "Start index must be strictly smaller than the end index";
         for (int i = startIndex; i <= endIndex; i++) {
             Person personToBlacklist = addressBook.getPersonList().get(i - 1);
             if (!personToBlacklist.getBlacklistStatus()) {
@@ -132,6 +145,7 @@ public class ModelManager implements Model {
 
     @Override
     public void massUnblacklist(int startIndex, int endIndex) {
+        assert startIndex < endIndex : "Start index must be strictly smaller than the end index";
         for (int i = startIndex; i <= endIndex; i++) {
             Person personToUnblacklist = addressBook.getPersonList().get(i - 1);
             if (personToUnblacklist.getBlacklistStatus()) {
@@ -143,11 +157,6 @@ public class ModelManager implements Model {
     @Override
     public void sortByName(boolean isAscending) {
         addressBook.sortByName(isAscending);
-    }
-
-    @Override
-    public void toggleBlacklist(Person target) {
-        setPerson(target, target.toggleBlacklistStatus());
     }
 
     //=========== Filtered Person List Accessors =============================================================

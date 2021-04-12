@@ -25,7 +25,7 @@ public class BlacklistCommand extends Command {
     public static final String MESSAGE_USAGE = COMMAND_WORD + ": Blacklists/Un-blacklists the person identified "
             + "by the index number used in the last person listing. "
             + "Current blacklist status will be changed.\n"
-            + "Parameters: INDEX (must be a positive integer) "
+            + "Parameters: INDEX (must be a positive integer)\n"
             + "Example: " + COMMAND_WORD + " 1 ";
 
     private static final Logger logger = Logger.getLogger("BlacklistLogger");
@@ -50,14 +50,14 @@ public class BlacklistCommand extends Command {
         Person personToEdit = getPerson(model);
         updateThisBlacklist(personToEdit);
 
-        logger.log(Level.INFO, "Going to replace person in model");
-        model.toggleBlacklist(personToEdit);
-        model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
-        logger.log(Level.INFO, "Person replaced");
-
-        Person editedPerson = getPerson(model);
+        Person editedPerson = personToEdit.toggleBlacklistStatus();
         assert(blacklist.getStatus() != editedPerson.getBlacklistStatus());
         updateThisBlacklist(editedPerson);
+
+        logger.log(Level.INFO, "Going to replace person in model");
+        model.setPerson(personToEdit, editedPerson);
+        model.updateFilteredPersonList(PREDICATE_SHOW_ALL_PERSONS);
+        logger.log(Level.INFO, "Person replaced");
 
         logger.log(Level.INFO, "End execution of BlacklistCommand");
         return new CommandResult(generateSuccessMessage(editedPerson));
